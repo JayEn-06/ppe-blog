@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeorgia's Blog</title>
+    <style>
+        /* General Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Akira', sans-serif;
+            font-weight: 600; /* Semibold */
+            background: url('Photos/Background.gif') no-repeat center center fixed; /* Set background */
+            background-size: cover; /* Cover the entire background */
+            color: #ffffff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Customized Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px; /* Thin scrollbar */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #121212; /* Dark background for track */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #7f8c8d; /* Gray color for thumb */
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #95a5a6; /* Slightly lighter gray on hover */
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2e2e2e, #121212);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .loading-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: #3498db;
+            animation: loadBar 1s linear;
+        }
+
+        .loading-title {
+            font-size: 28px;
+            color: #ffffff;
+            font-weight: 700;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        .loading-title span {
+            display: inline-block;
+            animation: dots 1.5s infinite;
+        }
+
+        .loading-title span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-title span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes dots {
+            0%, 20% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+
+        @keyframes loadBar {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes swipeUp {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100%); }
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8);
+            padding-top: 80px;
+            transition: background-color 0.5s ease;
+            flex: 1 0 auto; /* Allow the content to expand and push footer down */
+        }
+
+        /* Header */
+        .header {
+            background: none; /* Make header background transparent */
+            width: 100%;
+            padding: 15px 20px;
+            position: fixed;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin: 0;
+            text-align: left; /* Align title to the left */
+            text-transform: uppercase;
+            font-weight: bold;
+            flex: 1; /* Allow title to take available space */
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+            align-items: center; /* Center buttons vertically */
+            position: relative; /* Needed for the underline effect */
+        }
+
+        .nav-buttons button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 18px;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-buttons button::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -5px; /* Adjust according to design */
+            width: 0;
+            height: 2px;
+            background: #3498db; /* Underline color */
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+
+        .nav-buttons button:hover {
+            color: #3498db;
+        }
+
+        .nav-buttons button:hover::after {
+            width: 100%; /* Full width on hover */
+            left: 0; /* Align to the left */
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 25px; /* Increased gap between icons */
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 45px; /* Increased size of icons */
+            text-decoration: none;
+            transition: color 0.3s, transform 0.2s;
+        }
+
+        .social-icons a:hover {
+            color: #3498db;
+            transform: scale(1.2);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: black; /* Footer background color */
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            font-size: 14px;
+            border-top: 1px solid #444;
+            margin-top: auto; /* Push footer to the bottom */
+        }
+
+        /* Scroll Down Arrow and Text Animation */
+        .scroll-down {
+            position: absolute;
+            bottom: 40px; /* Increased bottom position */
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            animation: bounce 1.5s infinite;
+            background: none; /* Remove default button styles */
+            border: none; /* Remove border */
+        }
+
+        .scroll-down-label {
+            position: absolute;
+            bottom: 70px; /* Increased bottom position */
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            animation: bounce 1.5s infinite;
+            background: none; /* Remove default button styles */
+            border: none; /* Remove border */
+        }
+
+        /* Up Arrow */
+        .up-arrow {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            display: none; /* Initially hidden */
+            animation: bounce 1.5s infinite;
+            background: none; /* Remove default button styles */
+            border: none; /* Remove border */
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Image Swiper */
+        .swiper-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%; /* Set max width to 100% */
+            margin: 20px auto;
+        }
+
+        .swiper-slide {
+            display: none; /* Hide all slides */
+            width: 100%; /* Ensure slides fit the screen */
+            height: auto; /* Allow height to adjust based on content */
+            transition: opacity 0.5s ease; /* Animation for slide transition */
+        }
+
+        .swiper-slide.active {
+            display: block; /* Show active slide */
+            opacity: 1; /* Ensure active slide is fully visible */
+        }
+
+        .swiper-buttons {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .swiper-button {
+            background: none;
+            color: white;
+            border: none;
+            font-size: 30px; /* Minimalist design */
+            cursor: pointer;
+            padding: 10px;
+            transition: color 0.3s;
+        }
+
+        .swiper-button:hover {
+            color: #3498db; /* Change color on hover */
+        }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            position: absolute;
+            bottom: 30px; /* Position dots on the image */
+            width: 100%;
+        }
+
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 0 5px;
+            border-radius: 50%;
+            background-color: white; /* Change to white */
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background-color: #3498db; /* Active dot color */
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h2 {
+                font-size: 28px;
+            }
+
+            .hero-section p {
+                font-size: 16px;
+            }
+
+            .nav-buttons button {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-bar"></div>
+        <div class="loading-title">
+            Loading<span>.</span><span>.</span><span>.</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content hidden">
+        <!-- Header -->
+        <div class="header">
+            <h1>☕BREWED FOR SUCCESS</h1>
+            <div class="nav-buttons">
+                <button onclick="scrollToThirdImage()">Study Tips</button>
+                <button onclick="scrollToSeventhImage()">Time Management</button>
+                <button onclick="scrollToNinthImage()">Saving Strategies</button>
+                <button onclick="scrollToEleventhImage()">Self-Care</button>
+            </div>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/YouAreNotAllowedToBeHere/" target="_blank">
+                    <img src="https://logolook.net/wp-content/uploads/2021/06/Symbol-Facebook.png" alt="Facebook" style="width: 62px; height: 37px;">
+                </a>
+                <a href="https://www.instagram.com/jnicolee_cd/" target="_blank">
+                    <img src="https://static.vecteezy.com/system/resources/previews/042/127/156/non_2x/black-and-white-instagram-logo-on-square-with-transparent-background-free-png.png" alt="Instagram" style="width: 50px; height: 50px;">
+                </a>
+            </div>
+        </div>
+
+        <!-- GIF -->
+        <img src="Photos/Homepage background 1.gif" alt="Background Animation" style="width: 100%; height: auto; margin-top: -80px;"> <!-- Adjusted margin -->
+
+        <!-- Second Image -->
+        <img src="Photos/What.png" alt="What it Means" style="width: 80%; height: auto; margin-top: 20px;"> <!-- Second image resized -->
+
+        <!-- Third Image -->
+        <img src="Photos/Study Tips.gif" alt="Study Tips" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Third image fills the screen -->
+
+        <!-- Fourth Image (smaller) -->
+        <img src="Photos/Strategies.png" alt="Strategies" style="width: 70%; height: auto; margin-top: 20px;"> <!-- Fourth image made smaller -->
+
+        <!-- Fifth Image -->
+        <img src="Photos/Schedule.png" alt="Schedule" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Fifth image added -->
+
+        <!-- Sixth Image -->
+        <img src="Photos/Goals.png" alt="Goals" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Sixth image added -->
+
+        <!-- Seventh Image -->
+        <img src="Photos/Time Management.gif" alt="Time Management" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Seventh image added -->
+
+        <!-- Eighth Image -->
+        <img src="Photos/Time.png" alt="Time" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Eighth image added -->
+
+        <!-- Ninth Image -->
+        <img src="Photos/Money.gif" alt="Money" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Ninth image added -->
+
+        <!-- Tenth Image -->
+        <img src="Photos/Budget.png" alt="Budget" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Tenth image added -->
+
+        <!-- Eleventh Image -->
+        <img src="Photos/SelfCare.gif" alt="Self Care" style="width: 100%; height: auto; margin-top: 20px;"> <!-- Eleventh image added -->
+
+        <!-- Image Swiper -->
+        <div class="swiper-container">
+            <div class="swiper-slide active"><img src="Photos/Nature.png" alt="Nature" style="width: 100%; height: auto;"></div>
+            <div class="swiper-slide"><img src="Photos/Friends.png" alt="Friends" style="width: 100%; height: auto;"></div>
+            <div class="swiper-slide"><img src="Photos/Cat.png" alt="Cat" style="width: 100%; height: auto;"></div>
+            <div class="swiper-slide"><img src="Photos/Mental.png" alt="Mental" style="width: 100%; height: auto;"></div>
+            <div class="swiper-buttons">
+                <button class="swiper-button" onclick="prevSlide()">❮</button>
+                <button class="swiper-button" onclick="nextSlide()">❯</button>
+            </div>
+            <div class="dots">
+                <div class="dot active" onclick="goToSlide(0)"></div>
+                <div class="dot" onclick="goToSlide(1)"></div>
+                <div class="dot" onclick="goToSlide(2)"></div>
+                <div class="dot" onclick="goToSlide(3)"></div>
+            </div>
+        </div>
+
+        <!-- Scroll Down Arrow with Label -->
+        <button class="scroll-down-label" onclick="scrollToSecondImage()">Scroll Down</button>
+        <button class="scroll-down" onclick="scrollToSecondImage()">↓</button>
+
+        <!-- Up Arrow -->
+        <button class="up-arrow" id="upArrow" onclick="scrollToTop()">↑</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2024 Jeorgia's Blog. All Rights Reserved.
+    </div>
+
+    <script>
+        // Simulate loading screen duration and swipe-up animation
+        window.onload = () => {
+            const loadingScreen = document.querySelector('.loading-screen');
+            const mainContent = document.querySelector('.main-content');
+            const mainContentContainer = document.querySelector('.main-content');
+            const upArrow = document.getElementById('upArrow');
+
+            setTimeout(() => {
+                loadingScreen.style.animation = 'swipeUp 1s forwards';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    mainContent.classList.remove('hidden');
+                    document.body.style.overflow = 'auto'; // Allow scrolling
+                }, 1000);
+            }, 1000); // Loading duration
+
+            // Scroll animation for background color change
+            window.addEventListener('scroll', () => {
+                const scrollPosition = window.scrollY;
+
+                // Show or hide the up arrow based on scroll position
+                if (scrollPosition > 100) {
+                    upArrow.style.display = 'block'; // Show up arrow
+                } else {
+                    upArrow.style.display = 'none'; // Hide up arrow
+                }
+
+                if (scrollPosition > 100) {
+                    mainContentContainer.style.transition = 'background-color 1s ease';
+                    mainContentContainer.style.backgroundColor = '#333'; // Dark gray background after scroll
+                } else {
+                    mainContentContainer.style.transition = 'background-color 1s ease';
+                    mainContentContainer.style.backgroundColor = ''; // Reset to original background
+                }
+            });
+        };
+
+        // Scroll down functionality to second image
+        function scrollToSecondImage() {
+            const secondImage = document.querySelector('img[alt="What it Means"]');
+            secondImage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll down functionality to third image
+        function scrollToThirdImage() {
+            const thirdImage = document.querySelector('img[alt="Study Tips"]');
+            thirdImage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll down functionality to seventh image
+        function scrollToSeventhImage() {
+            const seventhImage = document.querySelector('img[alt="Time Management"]');
+            seventhImage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll down functionality to ninth image
+        function scrollToNinthImage() {
+            const ninthImage = document.querySelector('img[alt="Money"]');
+            ninthImage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll down functionality to eleventh image
+        function scrollToEleventhImage() {
+            const eleventhImage = document.querySelector('img[alt="Self Care"]');
+            eleventhImage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll to top functionality
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Image swiper functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.swiper-slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                dots[i].classList.remove('active');
+            });
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            showSlide(currentSlide);
+        }
+    </script>
+</body>
+</html>
